@@ -32,9 +32,6 @@ class shikiGami():
     def alive(self):
         return self.prop.blood > 0 and self.extra_action
 
-    def updateStatus(self):
-        pass
-
     def action_1(self):
         pass
 
@@ -60,7 +57,7 @@ class shikiGami():
             self.prop.speed += delta
 
 
-class environment():
+class Environment():
     def __init__(self, red, blue):
         self.oninohi = 4
         self.red = red
@@ -87,17 +84,15 @@ class environment():
         isOver, shikigami = self.select_action_onRound()
         if isOver:
             return statuses
-        for candi in shikigami.updateStatus():
-            assert isinstance(candi, Transition)
-
-        shikigami.updateStatus()
-
-
-    def beforeRound(self):
-        pass
-
-    def afterRound(self):
-        pass
+        for bcandi in shikigami.before_Actor():
+            assert isinstance(bcandi, Transition)
+            shikigami.set(bcandi)
+            for candi in shikigami.action():
+                assert isinstance(candi, Transition)
+                shikigami.set(candi)
+                for fcandi in shikigami.after_Actor():
+                    statuses.append(fcandi)
+        return statuses
 
     def select_action_onRound(self):
         def actor(queue, alive, cur, shikigami=None):
@@ -118,9 +113,11 @@ class environment():
 
 
 def calcQFunction(env):
+    assert isinstance(env, Environment)
     QValue = 0.0
     hasStatus = True
     while hasStatus:
+        env.action()
 
 
 
